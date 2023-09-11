@@ -1,0 +1,43 @@
+{
+  "name": "linql.client-angular",
+  "version": "1.0.0",
+  "author": "Kris Sodroski",
+  "license": "MIT",
+  "homepage": "https://github.com/LinqlLang/Linql",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LinqlLang/typescript.linql.client-angular"
+  },
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build linql.client-angular",
+    "watch": "ng build linql.client-angular --watch",
+    "test": "ng test",
+    "install-module": "cd projects/linql.client-angular && npm i && cd ../../../",
+    "install-schematics": "cd projects/linql.client-angular && npm run build && cd ../../../",
+    "setup": "npm i && npm run install-module && npm run build",
+    "autoPublish": "cd dist/linql.client-angular && npm publish"
+  },
+  "private": true,
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^15.0.2",
+    "@angular/cli": "~15.0.2",
+    "@angular/compiler-cli": "^15.0.0",
+    "@angular/platform-browser-dynamic": "^15.1.4",
+    "@types/jasmine": "~4.3.0",
+    "glob": "^9.2.1",
+    "jasmine-core": "~4.5.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage": "~2.2.0",
+    "karma-coverage-istanbul-reporter": "^3.0.3",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.0.0",
+    "ng-packagr": "^15.0.0",
+    "typescript": "~4.8.2"
+  }
+}
