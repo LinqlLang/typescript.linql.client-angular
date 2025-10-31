@@ -1,10 +1,27 @@
 import { ALinqlContext, ALinqlSearch, LinqlSearch, OrderedLinqlSearch } from "linql.client";
-import { AnyExpression, BooleanExpression, TransformExpression } from "linql.core";
+import { AnyExpression, BooleanExpression, IGrouping, LinqlExpression, LinqlFunction, TransformExpression } from "linql.core";
 import { Observable } from "rxjs";
 import { IObservableContext } from "./IObservableContext";
 
 export class LinqlObservable<T> extends LinqlSearch<T>
 {
+
+  public override CustomLinqlFunction<S>(FunctionName: string, Expression: AnyExpression<T> | string | undefined = undefined): LinqlObservable<S>
+  {
+    const customFunction = new LinqlFunction(FunctionName);
+
+    const functionArguments = this.Context.Parse(Expression, this.ArgumentContext);
+
+    if (functionArguments)
+    {
+      customFunction.Arguments = new Array<LinqlExpression>();
+      customFunction.Arguments.push(functionArguments);
+    }
+
+    const newSearch = this.Copy();
+    this.AttachTopLevelFunction(customFunction, newSearch);
+    return newSearch as any as LinqlObservable<S>;
+  }
 
   private isObservableContext(Context: ALinqlContext | IObservableContext): Context is IObservableContext
   {
@@ -93,6 +110,27 @@ export class LinqlObservable<T> extends LinqlSearch<T>
     convert.Expressions = custom.Expressions;
     return convert;
   }
+
+  //#region ReturnTypeOverrides 
+
+  public override Select<S>(Expression: TransformExpression<T, S> | string)
+  {
+    return this.CustomLinqlFunction<S>("Select", Expression);
+  }
+
+  public override SelectMany<S>(Expression: TransformExpression<T, S> | string)
+  {
+    return this.CustomLinqlFunction<S>("SelectMany", Expression);
+  }
+
+  public override GroupBy<S>(Expression: TransformExpression<T, S> | string)
+  {
+    return this.CustomLinqlFunction<IGrouping<S, T>>("GroupBy", Expression);
+  }
+
+
+  //#endregion
+
 }
 
 export class OrderedLinqlObservable<T> extends OrderedLinqlSearch<T>
