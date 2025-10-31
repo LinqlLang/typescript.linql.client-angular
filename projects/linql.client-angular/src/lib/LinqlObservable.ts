@@ -94,6 +94,12 @@ export class LinqlObservable<T> extends LinqlSearch<T>
     return this.executeCustomLinqlFunctionObservable("AverageAsync", Predicate);
   }
 
+  public CountObservable()
+  {
+    return this.executeCustomLinqlFunctionObservable<number>("CountAsync");
+  }
+
+
   public override OrderBy<S>(Expression: TransformExpression<T, S> | string): OrderedLinqlObservable<T>
   {
     const custom = this.CustomLinqlFunction<T>("OrderBy", Expression);
