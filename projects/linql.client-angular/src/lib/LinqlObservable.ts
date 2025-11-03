@@ -146,6 +146,23 @@ export class OrderedLinqlObservable<T> extends OrderedLinqlSearch<T>
     return (Context as IObservableContext).GetObservableResult !== undefined;
   }
 
+  public override CustomLinqlFunction<S>(FunctionName: string, Expression: AnyExpression<T> | string | undefined = undefined): OrderedLinqlObservable<S>
+  {
+    const customFunction = new LinqlFunction(FunctionName);
+
+    const functionArguments = this.Context.Parse(Expression, this.ArgumentContext);
+
+    if (functionArguments)
+    {
+      customFunction.Arguments = new Array<LinqlExpression>();
+      customFunction.Arguments.push(functionArguments);
+    }
+
+    const newSearch = this.Copy();
+    this.AttachTopLevelFunction(customFunction, newSearch);
+    return newSearch as any as OrderedLinqlObservable<S>;
+  }
+
   executeCustomLinqlFunctionObservable<TResult>(FunctionName: string, Predicate: AnyExpression<any> | string | undefined = undefined): Observable<TResult>
   {
     const search: ALinqlSearch<T> = this.CustomLinqlFunction(FunctionName, Predicate);
@@ -211,4 +228,24 @@ export class OrderedLinqlObservable<T> extends OrderedLinqlSearch<T>
   {
     return this.executeCustomLinqlFunctionObservable("AverageAsync", Predicate);
   }
+
+  //#region ReturnTypeOverrides 
+
+  public override Select<S>(Expression: TransformExpression<T, S> | string)
+  {
+    return this.CustomLinqlFunction<S>("Select", Expression);
+  }
+
+  public override SelectMany<S>(Expression: TransformExpression<T, S> | string)
+  {
+    return this.CustomLinqlFunction<S>("SelectMany", Expression);
+  }
+
+  public override GroupBy<S>(Expression: TransformExpression<T, S> | string)
+  {
+    return this.CustomLinqlFunction<IGrouping<S, T>>("GroupBy", Expression);
+  }
+
+
+  //#endregion
 }
